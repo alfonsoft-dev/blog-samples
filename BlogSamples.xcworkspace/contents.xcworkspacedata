@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:ASCommon">
+   </FileRef>
+   <Group
+      location = "group:00-Reference"
+      name = "00-Reference">
+      <FileRef
+         location = "group:IDETemplateMacros.plist">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:01-NavigationViewInstance"
+      name = "01-NavigationViewInstance">
+      <FileRef
+         location = "group:NavigationViewInstance.xcodeproj">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:02-NavigationRouter"
+      name = "02-NavigationRouter">
+      <FileRef
+         location = "group:NavigationRouter.xcodeproj">
+      </FileRef>
+   </Group>
+</Workspace>
