@@ -6,13 +6,27 @@
 //
 
 import SwiftUI
+import ASCommon
 
 struct MainView: View {
+    
+    @Bindable var router: Router
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ASLogoView {
+            NavigationStack(path: $router.path) {
+                AllStreetsView()
+                    .navigationDestination(for: Router.Street.self) { street in
+                        DestinationView(destination: street.rawValue, kind: .street)
+                    }
+                    .navigationDestination(for: Router.Place.self) { place in
+                        DestinationView(destination: place.rawValue, kind: .place)
+                    }
+            }
+        }
     }
 }
 
 #Preview {
-    MainView()
+    MainView(router: Router())
 }

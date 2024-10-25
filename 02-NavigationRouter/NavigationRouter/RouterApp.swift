@@ -8,13 +8,13 @@
 import Foundation
 import SwiftUI
 
-//@main
+@main
 struct RouterApp: App {
     @State private var router = Router()
 
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainView(router: router)
         }
         .environment(router)
     }

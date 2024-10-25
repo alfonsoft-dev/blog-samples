@@ -11,68 +11,96 @@ import SwiftUI
 @Observable
 final class Router {
     
-    enum Street: Hashable {
-        case bakeryStreet
-        case libraryAvenue
-        case marketRoad
-        case gardenLane
+    enum Street: String, CaseIterable, Identifiable, Codable {
+        var id: String {
+            self.rawValue
+        }
+        
+        case bakeryStreet = "bakeryStreet"
+        case libraryAvenue = "libraryAvenue"
+        case marketRoad = "marketRoad"
+        case gardenLane = "gardenLane"
     }
     
-    enum Place: Hashable {
-        case bakeryBread
-        case bakeryButter
-        case centralLibrary
-        case archiveCenter
-        case freshMarket
-        case fishStall
-        case roseGarden
-        case flowerNursery
+    enum Place: String, CaseIterable, Identifiable, Hashable, Codable {
+        var id: String {
+            self.rawValue
+        }
+
+        case bakeryBread = "bakeryBread"
+        case bakeryButter = "bakeryButter"
+        case centralLibrary = "centralLibrary"
+        case archiveCenter = "archiveCenter"
+        case freshMarket = "freshMarket"
+        case fishStall = "fishStall"
+        case roseGarden = "roseGarden"
+        case flowerNursery = "flowerNursery"
+    }
+    
+    enum Kind {
+        case street
+        case place
     }
     
     var path = NavigationPath()
-    private var currentStreet: Street?
-    private var currentPlace: Place?
+    var failureMessage: String?
+    private var streetPath: [Street] = []
+    private var placePath: [Place] = []
+    private var kindPath: [Kind] = []
     
     func home() {
-        self.currentStreet = nil
-        self.currentPlace = nil
+        self.streetPath = []
+        self.placePath = []
+        self.kindPath = []
         self.path.removeLast(self.path.count)
     }
     
     func back() {
-        guard self.currentStreet != nil else {
+        guard let kind = kindPath.last else {
             return
+        }
+        
+        switch kind {
+        case .street: self.streetPath.removeLast()
+        case .place: self.placePath.removeLast()
         }
 
         self.path.removeLast()
+        self.kindPath.removeLast()
     }
     
     func navigate(to street: Street) {
         guard isNavigationValid(to: street) else {
+            self.failureMessage = "navigation to \(street.rawValue) failed"
             return
         }
-        
-        self.currentStreet = street
-        self.currentPlace = nil
+
+        self.kindPath.append(.street)
+        self.streetPath.append(street)
         self.path.append(street)
+        self.failureMessage = nil
     }
     
     func navigate(to place: Place) {
         guard isStreetNavigationValid(to: place)
                 || isWalkNavigationValid(to: place)
         else {
+            self.failureMessage = "navigation to \(place.rawValue) failed"
             return
         }
         
-        self.currentPlace = place
+        self.kindPath.append(.place)
+        self.placePath.append(place)
         self.path.append(place)
+        self.failureMessage = nil
     }
     
     private func isNavigationValid(to destination: Street) -> Bool {
-        guard let from = self.currentStreet else {
+        guard streetPath.count > 0 else {
             return true
         }
         
+        let from = streetPath.last
         switch destination {
         case .bakeryStreet:
             return from == .gardenLane
@@ -86,10 +114,17 @@ final class Router {
     }
     
     private func isStreetNavigationValid(to destination: Place) -> Bool {
-        guard let street = currentStreet else {
-            return false
+        guard streetPath.count > 0 else {
+            return false // should navigate to street first
         }
         
+        if let kind = kindPath.last,
+           kind == .place,
+           placePath.last == destination {
+            return false // already at destination
+        }
+        
+        let street = streetPath.last
         switch destination {
         case .bakeryBread, .bakeryButter:
             return street == .bakeryStreet
@@ -103,7 +138,7 @@ final class Router {
     }
     
     private func isWalkNavigationValid(to destination: Place) -> Bool {
-        guard let place = currentPlace else {
+        guard placePath.count > 0 else {
             return false
         }
         

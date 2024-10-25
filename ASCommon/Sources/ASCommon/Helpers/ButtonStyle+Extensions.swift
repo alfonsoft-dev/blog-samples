@@ -13,11 +13,11 @@ import SwiftUI
 public struct GhostButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding()
+            .padding(8)
             .foregroundStyle(.tint)
             .background(
                 RoundedRectangle(
-                    cornerRadius: 20,
+                    cornerRadius: 15,
                     style: .continuous
                 )
                 .stroke(.tint, lineWidth: 2)
